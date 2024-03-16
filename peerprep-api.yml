@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: PeerPrep API
+  description: A RESTful API for managing coding questions for the PeerPrep platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Development server
+paths:
+  /questions:
+    get:
+      summary: Retrieves a list of questions, with optional filters.
+      parameters:
+        - in: query
+          name: complexity
+          schema:
+            type: string
+            enum: [easy, medium, hard]
+          required: false
+          description: Filter questions by complexity.
+        - in: query
+          name: category
+          schema:
+            type: string
+          required: false
+          description: Filter questions by category (comma-separated for multiple categories).
+      responses:
+        '200':
+          description: A JSON array of questions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+              examples:
+                mixedComplexity:
+                  summary: An example of a mixed complexity questions list.
+                  value:
+                    - id: "1"
+                      title: "Reverse a String"
+                      description: "Write a function that reverses a string. The input string is given as an array of characters s."
+                      categories: ["Strings", "Algorithms"]
+                      complexity: "Easy"
+                      link: "https://leetcode.com/problems/reverse-string/"
+                    - id: "2"
+                      title: "Linked List Cycle Detection"
+                      description: "Implement a function to detect if a linked list contains a cycle."
+                      categories: ["Data Structures", "Algorithms"]
+                      complexity: "Easy"
+                      link: "https://leetcode.com/problems/linked-list-cycle/"
+    post:
+      summary: Creates a new question.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+            examples:
+              repeatedDnaSequences:
+                summary: Example of adding a new question about DNA sequences.
+                value:
+                  title: "Repeated DNA Sequences"
+                  description: "The DNA sequence is composed of a series of nucleotides abbreviated as 'A', 'C', 'G', and 'T'. For example, 'ACGAATTCCG' is a DNA sequence. When studying DNA, it is useful to identify repeated sequences within the DNA. Given a string s that represents a DNA sequence, return all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in any order."
+                  categories: ["Algorithms", "Bit Manipulation"]
+                  complexity: "Medium"
+                  link: "https://leetcode.com/problems/repeated-dna-sequences/"
+      responses:
+        '201':
+          description: The question was successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+              examples:
+                questionCreated:
+                  value:
+                    id: "10"
+                    title: "Repeated DNA Sequences"
+                    description: "The DNA sequence is composed of a series of nucleotides abbreviated as 'A', 'C', 'G', and 'T'. For example, 'ACGAATTCCG' is a DNA sequence. When studying DNA, it is useful to identify repeated sequences within the DNA. Given a string s that represents a DNA sequence, return all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in any order."
+                    categories: ["Algorithms", "Bit Manipulation"]
+                    complexity: "Medium"
+                    link: "https://leetcode.com/problems/repeated-dna-sequences/"
+                    
+  /questions/{id}:
+    get:
+      summary: Retrieves a specific question by its ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The question's ID.
+      responses:
+        '200':
+          description: A specific question's details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+              examples:
+                specificQuestion:
+                  value:
+                    id: "1"
+                    title: "Reverse a String"
+                    description: "Write a function that reverses a string. The input string is given as an array of characters s."
+                    categories: ["Strings", "Algorithms"]
+                    complexity: "Easy"
+                    link: "https://leetcode.com/problems/reverse-string/"
+components:
+  schemas:
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the question.
+        title:
+          type: string
+          description: The title of the question.
+        description:
+          type: string
+          description: The full description of the question.
+        categories:
+          type: array
+          items:
+            type: string
+          description: Categories that the question belongs to.
+        complexity:
+          type: string
+          enum: [easy, medium, hard]
+          description: The complexity level of the question.
+        link:
+          type: string
+          format: uri
+          description: A link to more information or the source of the question.
